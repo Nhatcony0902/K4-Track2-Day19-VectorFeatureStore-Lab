@@ -25,6 +25,14 @@ Riêng NB6 và NB7 có thêm phần trả lời các câu hỏi rubric chấm (v
 ngưỡng cache nào và vì sao 0,75 chưa đủ). Screenshots trong `submission/screenshots/` được render từ chính
 output đã lưu trong các notebook này.
 
+## Bonus: `bonus/`
+
+| File | Nội dung |
+|---|---|
+| `ARCHITECTURE.md` | Sơ đồ Mermaid, 3 quyết định có tradeoff (chunking / feature schema + weighted RRF / freshness), các phương án đã loại, bối cảnh tiếng Việt (gõ không dấu, bigram âm tiết, code-switching, Nghị định 13), hạn chế |
+| `agent.py` | `HybridMemoryAgent.remember()` / `.recall()`: Qdrant + BM25 + Feast online + Push API |
+| `demo.py` → `demo_output.txt` | 5 query (exit 0); 4/5 đúng, query paraphrase thua vì `bge-small-en` (đã phân tích trong ARCHITECTURE); push → đọc online 22 ms |
+
 ## Số liệu chính
 
 | NB | Tiêu chí | Kết quả |

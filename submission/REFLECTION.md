@@ -40,5 +40,7 @@ CPU lai P/E-core, làm việc embed 1 query chậm khoảng 10 lần. Giới h�
 
 ## Bonus challenge
 
-- [ ] Đã làm bonus (xem `bonus/`)
-- [ ] Pair work với: _(không)_
+- [x] Đã làm bonus (xem `bonus/`): `HybridMemoryAgent` gồm Qdrant (episodic, filter `user_id`) + Feast
+  (profile batch TTL 30 ngày + recent activity qua Push API TTL 1 giờ), weighted RRF có profile boost theo
+  ý định của query. `python bonus/demo.py` exit 0, chạy đủ 5 query, kiểm tra không rò memory giữa hai user.
+- [ ] Pair work với: _(không, làm một mình)_

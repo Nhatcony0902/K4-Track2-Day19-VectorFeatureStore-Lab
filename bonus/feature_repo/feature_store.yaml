@@ -1,0 +1,11 @@
+# Bonus — HybridMemoryAgent feature store. Separate project so it never touches
+# the registries graded in NB4 (app/feast_repo) or NB8 (app/feast_repo_ondemand).
+project: lab19_memory
+provider: local
+registry: data/registry.db
+online_store:
+  type: sqlite
+  path: data/online_store.db
+offline_store:
+  type: file
+entity_key_serialization_version: 3

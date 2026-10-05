@@ -1,0 +1,53 @@
+Materializing 1 feature views from 2026-09-04 16:05:49+00:00 to 2026-10-05 16:05:49+00:00 into the sqlite online store.
+
+user_profile:
+remembered 7 memories for 2 users
+
+=== 1. Simple (vector hit): 'Tôi đã đọc gì về Kubernetes?'
+[profile] language=vi, reads ~230 wpm, interested in cloud, usually active around 22h
+[recent] no queries in the last hour
+[memories]
+  1. (chat, 2026-10-04, cloud, rrf=0.1909 via bm25#1+vector#1+profile#1) Hôm qua mình hỏi trợ lý cách debug pod Kubernetes bị CrashLoopBackOff. Trợ lý gợi ý xem kubectl logs --previou
+  2. (doc, 2026-10-02, cloud, rrf=0.0917 via vector#2+profile#2) Horizontal Pod Autoscaler co giãn số replica theo CPU và request per second. Cluster Autoscaler thêm node khi 
+  3. (doc, 2026-09-15, cloud, rrf=0.0846 via vector#3+profile#3) Tối ưu chi phí cloud: dùng spot instance cho batch job, rightsizing máy ảo, đặt budget alert và tắt môi trường
+
+=== 2. Needs profile: 'Recommend đọc gì tiếp'
+[profile] language=vi, reads ~230 wpm, interested in cloud, usually active around 22h
+[recent] 1 queries in the last hour, mostly about cloud (last: "Tôi đã đọc gì về Kubernetes?")
+[memories]
+  1. (doc, 2026-09-15, cloud, rrf=0.1603 via vector#2+profile#3) Tối ưu chi phí cloud: dùng spot instance cho batch job, rightsizing máy ảo, đặt budget alert và tắt môi trường
+  2. (doc, 2026-10-02, cloud, rrf=0.1603 via vector#3+profile#2) Horizontal Pod Autoscaler co giãn số replica theo CPU và request per second. Cluster Autoscaler thêm node khi 
+  3. (chat, 2026-10-04, cloud, rrf=0.1534 via vector#6+profile#1) Hôm qua mình hỏi trợ lý cách debug pod Kubernetes bị CrashLoopBackOff. Trợ lý gợi ý xem kubectl logs --previou
+
+=== 3. Needs fresh activity: 'Tôi đang quan tâm gì gần đây?'
+[profile] language=vi, reads ~230 wpm, interested in cloud, usually active around 22h
+[recent] 2 queries in the last hour, mostly about cloud (last: "Recommend đọc gì tiếp")
+[memories]
+  1. (doc, 2026-09-15, cloud, rrf=0.1678 via vector#1+profile#3) Tối ưu chi phí cloud: dùng spot instance cho batch job, rightsizing máy ảo, đặt budget alert và tắt môi trường
+  2. (doc, 2026-10-02, cloud, rrf=0.1548 via vector#4+profile#2) Horizontal Pod Autoscaler co giãn số replica theo CPU và request per second. Cluster Autoscaler thêm node khi 
+  3. (chat, 2026-10-04, cloud, rrf=0.1534 via vector#6+profile#1) Hôm qua mình hỏi trợ lý cách debug pod Kubernetes bị CrashLoopBackOff. Trợ lý gợi ý xem kubectl logs --previou
+
+=== 4. Paraphrase: 'Tài liệu về tự động mở rộng hạ tầng?'
+[profile] language=vi, reads ~230 wpm, interested in cloud, usually active around 22h
+[recent] 3 queries in the last hour, mostly about cloud (last: "Tôi đang quan tâm gì gần đây?")
+[memories]
+  1. (doc, 2026-09-30, legal, rrf=0.1742 via bm25#2+vector#1) Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân yêu cầu có sự đồng ý của chủ thể dữ liệu, và phải đánh giá t
+  2. (doc, 2026-10-02, cloud, rrf=0.1707 via bm25#1+vector#4+profile#2) Horizontal Pod Autoscaler co giãn số replica theo CPU và request per second. Cluster Autoscaler thêm node khi 
+  3. (doc, 2026-09-15, cloud, rrf=0.0910 via vector#2+profile#3) Tối ưu chi phí cloud: dùng spot instance cho batch job, rightsizing máy ảo, đặt budget alert và tắt môi trường
+
+=== 5. Mixed (hybrid + profile): 'Cho tôi summary cloud security'
+[profile] language=vi, reads ~230 wpm, interested in cloud, usually active around 22h
+[recent] 4 queries in the last hour, mostly about cloud (last: "Tài liệu về tự động mở rộng hạ tầng?")
+[memories]
+  1. (note, 2026-10-03, security, rrf=0.1818 via bm25#1+vector#1) Checklist cloud security: bật MFA cho root account, IAM theo nguyên tắc least privilege, mã hoá S3 bằng KMS, b
+  2. (doc, 2026-09-15, cloud, rrf=0.1744 via bm25#2+vector#2+profile#3) Tối ưu chi phí cloud: dùng spot instance cho batch job, rightsizing máy ảo, đặt budget alert và tắt môi trường
+  3. (doc, 2026-10-02, cloud, rrf=0.0853 via vector#3+profile#2) Horizontal Pod Autoscaler co giãn số replica theo CPU và request per second. Cluster Autoscaler thêm node khi 
+
+=== bonus check: no-diacritic query 'nghi dinh du lieu ca nhan'
+
+  1. (doc, 2026-09-30, legal, rrf=0.1818 via bm25#1+vector#1) Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân yêu cầu có sự đồng ý của chủ thể dữ liệu, và phải đánh giá t
+  2. (doc, 2026-10-02, cloud, rrf=0.1631 via bm25#2+vector#4+profile#2) Horizontal Pod Autoscaler co giãn số replica theo CPU và request per second. Cluster Autoscaler thêm node khi 
+  3. (doc, 2026-09-15, cloud, rrf=0.0910 via vector#2+profile#3) Tối ưu chi phí cloud: dùng spot instance cho batch job, rightsizing máy ảo, đặt budget alert và tắt môi trường
+
+push -> online read: 22 ms, last_query='giá GPU hiện tại'
+all 5 queries done, no cross-user leak
