@@ -208,3 +208,22 @@ for t in ("exact", "paraphrase", "mixed"):
 # (không phải 1) hoặc cộng 1/rank thay vì 1/(k+rank), đã hỏng — và rất khó debug
 # về sau khi quality giảm. Đây là 1 ví dụ "AI write 5 dòng đúng đắn nhưng nếu
 # bạn không tự kiểm tra công thức, bug nằm im trong production".
+
+# %% [markdown]
+# ## 📝 Phân tích kết quả (Phạm Long Nhật)
+#
+# | Mode | P@10 trung bình | exact | paraphrase | mixed |
+# |---|---:|---:|---:|---:|
+# | BM25 | 77,8% | **96,7%** | **33,3%** | 97,0% |
+# | Vector | 73,2% | 88,7% | 24,0% | 98,5% |
+# | **Hybrid RRF k=60** | **78,6%** | **96,7%** | 32,0% | **100%** |
+#
+# - RRF cài đúng công thức `1/(k + rank)`, **rank đếm từ 1** (`enumerate(..., start=1)`).
+# - **Hybrid thắng về trung bình** (hơn BM25 0,8 điểm %, hơn vector 5,4 điểm %) và đạt 100% ở `mixed`,
+#   loại query giống người dùng thật nhất.
+# - `exact`: BM25 bằng hybrid (96,7%). Tín hiệu từ khoá đã đủ mạnh, và RRF không làm hỏng thứ hạng đó.
+# - `paraphrase`: lẽ ra vector phải thắng, nhưng ở đây **BM25 (33%) cao hơn vector (24%)**. Lý do:
+#   `bge-small-en-v1.5` là model **tiếng Anh**, tokenizer cắt tiếng Việt thành mảnh vụn, nên câu
+#   diễn đạt lại không được kéo về đúng cụm. Hybrid (32%) vẫn xấp xỉ mode tốt nhất, tức là RRF đóng vai
+#   trò "bảo hiểm" khi một retriever yếu. Muốn vector thắng paraphrase thì cần model đa ngữ
+#   (`bge-m3` / `multilingual-e5`, chọn qua `EMBEDDING_BACKEND`) và phải index lại.

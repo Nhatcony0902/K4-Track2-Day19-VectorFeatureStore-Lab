@@ -200,3 +200,26 @@ print("doc_ids    :", ctx["doc_ids"][:5], "…")
 # một cách vô nghĩa. Bài đo chỉ có giá trị khi **tổng số document lấy về bằng
 # nhau**. Hãy tự kiểm tra dòng `per = budget // len(parts)` trước khi tin bất kỳ
 # con số nào ở §3.
+
+# %% [markdown]
+# ## 📝 Phân tích kết quả (Phạm Long Nhật)
+#
+# | Chiến lược (cùng ngân sách 16 doc) | recall | balance | calls |
+# |---|---:|---:|---:|
+# | single-shot | 0,526 | 0,08 | 1,0 |
+# | agentic (no filter) | **0,906** | **0,93** | 2,3 |
+# | agentic (+filter) | 0,823 | 0,76 | 2,3 |
+#
+# - Agentic thắng single-shot cả về recall (+0,38) lẫn balance (từ 0,08 lên 0,93), ở **cùng 16 doc**
+#   (`per = budget // len(parts)`). Vậy lợi thế đến từ *chiến lược* chứ không phải từ việc lấy nhiều doc hơn.
+# - **❓ Vì sao `agentic (+filter)` thấp hơn `agentic (no filter)`?** Topic filter được *đoán* từ keyword
+#   trong từng vế của câu hỏi. Đây là một ràng buộc cứng, nên khi đoán sai, hoặc khi doc liên quan nằm ở
+#   cụm lân cận (ví dụ doc đúng cho câu "cân bằng tải" có thể nằm ở `cloud` hoặc `devops` chứ không chỉ
+#   `networking`), các doc đó bị loại ngay từ trước khi xếp hạng, và recall mất đi không lấy lại được.
+#   Khi không filter, vector search tự xếp các doc ấy lên nhờ ngữ nghĩa. Filter cũng làm balance giảm vì
+#   một vế bị thiếu bằng chứng. Ngoài ra, trên Qdrant in-memory, tìm kiếm có filter còn chậm hơn
+#   (309 ms so với 174 ms). Kết luận: chỉ nên dùng filter khi nó là ràng buộc *thật* (tenant, quyền,
+#   thời gian), không dùng khi chỉ là phỏng đoán.
+# - Reflection: filter `since_year=2027` trả 0 doc, agent nới filter và lấy lại được 8 doc ở call thứ 2.
+# - `build_context(u_001)` ghép feature từ Feast (`topic_affinity=cloud`, `preferred_language=vi`) với
+#   `doc_ids` từ vector store, cho ra một context vừa cá nhân hoá vừa có grounding.

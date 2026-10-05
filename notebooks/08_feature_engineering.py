@@ -209,3 +209,18 @@ for i in range(3):
 # encoding an toàn. Cùng một lỗi thứ-tự đó, khi xảy ra trong pipeline thật, tạo
 # ra model 0.99 AUC offline và vô dụng online. Tự viết thứ tự: **split → fit
 # encoder trên train → transform cả hai**.
+
+# %% [markdown]
+# ## 📝 Phân tích kết quả (Phạm Long Nhật)
+#
+# - **Leakage do target encoding:** với `session_id` (khoảng 1,1 event mỗi nhóm), target-naive đạt train
+#   AUC 0,999 nhưng test chỉ 0,522, **gap 0,477 > 0,30**: giá trị encoding gần như chính là nhãn của dòng
+#   đó. In-fold thì gap xấp xỉ 0 (−0,003). Với `user_id` (khoảng 45 event mỗi nhóm), gap nhỏ hơn nhiều
+#   (0,052): nhóm càng ít mẫu thì leakage càng nặng.
+# - **PIT so với latest join:** dùng giá trị mới nhất thì 98,2% dòng training bị rò. AUC là 0,715 (latest)
+#   so với 0,595 (PIT), tức có **+0,120 AUC "ảo"** sẽ biến mất khi lên production.
+# - **On-demand feature view:** cùng `u_000` (avg7d khoảng 3,57 triệu), hai `amount` khác nhau cho
+#   `amount_vs_avg` là 0,03 (không spike) và 4,21 (spike=1). Feature này chỉ tính được tại thời điểm request.
+# - Sửa môi trường: Feast 0.66 yêu cầu khai báo `value_type=ValueType.STRING` cho entity `user` trong
+#   `feast_repo_ondemand/definitions.py`. Thiếu dòng này, join key bị suy ra kiểu JSON và materialize báo
+#   lỗi `Invalid JSON string for JSON type`.

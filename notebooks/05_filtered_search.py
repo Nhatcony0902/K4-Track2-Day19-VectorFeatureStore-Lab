@@ -161,3 +161,16 @@ for tenant in ("acme", "globex", "initech"):
 # ổn. Ground truth đúng phải là "top-K chính xác **trong subset khớp filter**".
 # Nếu bạn để AI tự chọn baseline, nó thường chọn cái tiện chứ không phải cái đúng,
 # và cả bài đo trở thành vô nghĩa. Tự viết `exact_top_k()` và tự kiểm tra nó.
+
+# %% [markdown]
+# ## 📝 Phân tích kết quả (Phạm Long Nhật)
+#
+# - **Post-filter sập khi filter chặt:** recall là 1,00 khi không filter, rơi xuống 0,20 khi filter giữ
+#   13–32% corpus, và **0,00 với `acme AND ≥2026` (3,8%)**. Lấy top-10 trước rồi mới lọc thì gần như
+#   không doc nào lọt qua.
+# - **Filtered-ANN giữ recall 1,00** ở mọi độ chọn lọc, vì filter được áp ngay *trong* lúc tìm kiếm.
+# - **Over-fetch ladder** (filter 3,8%): fetch_k=200 (20% corpus) mới đạt 0,80, phải tới **fetch_k=500,
+#   khoảng 50% corpus**, mới cứu được recall 1,00. Như vậy gần như là quét toàn bộ, mất hết lợi ích của ANN.
+# - Về cột ms: ở đây fANN chậm hơn post-filter, có lẽ do Qdrant chạy in-memory (chế độ lite). Trên Qdrant
+#   server có HNSW và payload index thì tương quan này có thể khác, nhưng lab không đo trường hợp đó.
+#   Kết luận: chọn chiến lược filter theo **độ chọn lọc**, và phải đo recall chứ đừng chỉ đo latency.

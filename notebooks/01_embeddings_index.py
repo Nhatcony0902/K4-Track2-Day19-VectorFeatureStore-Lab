@@ -154,3 +154,14 @@ for h in hits2:
 # pick the embedding model without first telling it: language(s), corpus
 # size, latency budget, and re-index cost.** Đây là 1 quyết định kiến trúc,
 # không phải boilerplate.
+
+# %% [markdown]
+# ## 📝 Phân tích kết quả (Phạm Long Nhật)
+#
+# - **Index:** `client.count("lab19") == 1000`, đủ 1000 vector 384 chiều (bge-small).
+# - **Query có từ khoá** (`cloud computing và tự động mở rộng`): 4/5 kết quả đầu thuộc `cloud`
+#   (score 0,77–0,80). Kết quả thứ 5 lạc sang `data_eng`, có lẽ vì doc đó cũng nói về tối ưu theo lưu lượng.
+# - **Query paraphrase** (không có chữ "cloud"): **5/5 thuộc `cloud`**, score khoảng 0,80. Embedding nhận ra
+#   cụm "tự động mở rộng … lưu lượng" dù câu hỏi không có từ khoá chủ đề. Đây đúng là bài học về dense retrieval.
+# - Lưu ý: corpus synthetic sinh theo template nên nhiều doc trùng title, vì vậy top-5 trông giống nhau.
+#   Đó là đặc tính của dữ liệu, không phải lỗi index.

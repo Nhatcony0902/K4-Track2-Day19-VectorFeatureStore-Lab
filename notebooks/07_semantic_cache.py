@@ -190,3 +190,18 @@ print("\nnamespaced=True  → GLOBEX nhận được:", blocked.answer if blocke
 # ground truth mà chỉ bạn mới có (ở đây là `topic`). Một cache 95% hit rate nghe
 # tuyệt vời cho tới khi bạn biết một phần ba số hit đó là câu trả lời của câu hỏi
 # khác. Luôn báo cáo hai cột cạnh nhau.
+
+# %% [markdown]
+# ## 📝 Phân tích kết quả (Phạm Long Nhật)
+#
+# - Bảng sweep có **cả hai cột**: tiết kiệm (probe "nóng" hit đúng) và trả lời sai (probe "lạnh" vẫn bị hit).
+# - **❓ Ngưỡng chọn: 0,85.** Đây là ngưỡng thấp nhất cho tỉ lệ sai bằng 0% mà vẫn giữ 100% tiết kiệm trên
+#   bộ probe này. Ngưỡng 0,90 cũng an toàn nhưng mất 4% tiết kiệm, còn 0,95 mất gần một nửa.
+# - **❓ Vì sao 0,75 chưa đủ?** Ở 0,75 có **36% probe "lạnh" bị trả lời bằng đáp án của một câu hỏi khác**.
+#   Câu hỏi trong corpus này rất giống nhau về cấu trúc (cùng template "cách … theo …"), và `bge-small-en`
+#   là model tiếng Anh nên cho các câu tiếng Việt cosine khá cao với nhau. Vì vậy điểm của các cặp
+#   *khác nghĩa* rơi sát mức 0,75. Con số 0,75 của AWS được đo trên một tập query thật khác, phân bố điểm
+#   cũng khác, nên phải đo lại ngưỡng trên dữ liệu của mình.
+# - TTL: HIT ở t=600 s, MISS ở t=4200 s (TTL 1800 s), `stale_evictions = 1`.
+# - Rò chéo tenant: với `namespaced=False`, GLOBEX đọc được doanh thu của ACME. Đây là sự cố bảo mật mà
+#   không sinh ra dòng log lỗi nào. Với `namespaced=True` thì MISS. Key của cache bắt buộc phải gồm tenant.

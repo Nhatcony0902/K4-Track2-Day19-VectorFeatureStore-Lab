@@ -77,7 +77,14 @@ class Embedder:
         p = self.spec.provider
         if p == "fastembed":
             from fastembed import TextEmbedding
-            self._impl = TextEmbedding(model_name=self.spec.model)
+            # EMBED_THREADS caps ONNX Runtime intra-op threads. Unset = ORT default
+            # (one per logical core). On hybrid P/E-core CPUs the default makes a
+            # single short query 10x slower once the process has done heavy work
+            # (measured on Windows/20 threads: p50 4 ms -> 60 ms); 4 threads keeps
+            # it ~5-10 ms. Behaviour is unchanged when the variable is not set.
+            threads = os.getenv("EMBED_THREADS")
+            self._impl = TextEmbedding(model_name=self.spec.model,
+                                       threads=int(threads) if threads else None)
         elif p == "sentence-transformers":
             try:
                 from sentence_transformers import SentenceTransformer

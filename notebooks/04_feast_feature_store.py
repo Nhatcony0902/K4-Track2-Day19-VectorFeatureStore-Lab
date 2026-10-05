@@ -195,7 +195,16 @@ historical = fs.get_historical_features(
         "user_profile_features:topic_affinity",
     ],
 ).to_df()
+print(f"Feast trả về {len(historical)} dòng:")
 print(historical)
+
+# Feast 0.66 (file offline store) bỏ hẳn entity row không có feature hợp lệ tại
+# thời điểm đó. u_001 hỏi lúc NOW-2h nhưng feature của u_001 được ghi lúc NOW-1h
+# → PIT join đúng là KHÔNG được thấy giá trị đó. Ghép lại với entity_df (left join)
+# để cả 3 event đều hiện, dòng u_001 mang NaN thay vì giá trị "từ tương lai".
+pit = entity_df.merge(historical, on=["user_id", "event_timestamp"], how="left")
+print(f"\nPIT join đầy đủ — {pit.shape[0]} rows × {pit.shape[1] - 2} features:")
+print(pit)
 
 # %% [markdown]
 # ## Deliverable evidence
@@ -221,3 +230,17 @@ print(historical)
 # bỏ lỡ tín hiệu real-time. **PIT join correctness** cũng là *think-hard* —
 # nếu data leakage xảy ra, training accuracy đẹp nhưng prod tệ 20-30% (deck §6).
 # Đừng để AI tự chọn TTL hay timestamp_field — bạn phải biết business semantics.
+
+# %% [markdown]
+# ## 📝 Phân tích kết quả (Phạm Long Nhật)
+#
+# - `feast apply` tạo 2 entity, **3 feature view** (`user_profile`, `item_popularity`, `query_velocity`)
+#   và 3 bảng SQLite cho online store.
+# - `materialize-incremental` nạp mỗi view theo cửa sổ TTL riêng (30 ngày / 1 ngày / 1 giờ), thấy rõ qua
+#   thời điểm bắt đầu khác nhau trong log.
+# - `get_online_features(u_001)` trả dict đủ 5 feature. Lần lookup đầu chậm hơn vì phải nạp registry.
+#   **P99 của 100 lookup dưới 10 ms → PASS**.
+# - **PIT join:** Feast trả về 2 dòng. Dòng `u_001` (event lúc NOW−2h) bị loại vì profile của `u_001`
+#   mãi tới NOW−1h mới được ghi, tức là *tại thời điểm event, giá trị đó chưa tồn tại*. Mình left-join
+#   kết quả lại với `entity_df` để hiện đủ **3 dòng**, trong đó dòng `u_001` là NaN. Đây chính là
+#   PIT correctness: nếu dùng giá trị NOW−1h cho event NOW−2h thì là rò rỉ dữ liệu tương lai (feature leakage).
